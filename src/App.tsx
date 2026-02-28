@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Mail, Phone, Video, Plus, Trash2, Send, CheckCircle } from 'lucide-react';
+import { Mail, Phone, Plus, Trash2, Send, CheckCircle } from 'lucide-react';
 import './App.css';
 
 interface VideoLink {
@@ -84,7 +84,7 @@ const App: React.FC = () => {
     e.preventDefault();
     
     // In a real scenario, this would be your Google Apps Script Web App URL
-    const GOOGLE_SHEET_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
+    // const GOOGLE_SHEET_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
     
     console.log('Submitting form data to Google Sheets:', formData);
     

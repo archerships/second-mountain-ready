@@ -35,3 +35,12 @@
 - Added Step 8: Free Domain & Hosting options.
 - Added Step 9: Pointing Custom Domains (DNS A and CNAME records).
 - Added Step 10: Simple update and redeploy workflow.
+## 2026-02-28 16:49:56 - CLI Deployment Setup
+- Installed gh-pages for automated CLI deployment.
+- Configured package.json with 'deploy' and 'predeploy' scripts.
+- Initialized local git repository and staged files.
+## 2026-02-28 16:51:30 - GitHub Repository Creation
+- Created public repository: archerships/second-mountain-ready.
+- Linked local git repository to origin: https://github.com/archerships/second-mountain-ready.git
+## 2026-02-28 16:51:42 - Update Homepage
+- Updated package.json 'homepage' field to https://archerships.github.io/second-mountain-ready/.
