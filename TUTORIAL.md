@@ -116,6 +116,7 @@ Once your site is ready locally, you need to make it available to the world.
 ### 2. Hosting with GitHub Pages (Free)
 GitHub Pages is the best free host for static sites like this one.
 
+**Method A: Using GitHub Desktop or Web (Beginner)**
 1.  **Initialize Git:**
     ```bash
     git init
@@ -129,18 +130,50 @@ GitHub Pages is the best free host for static sites like this one.
     git branch -M main
     git push -u origin main
     ```
-4.  **Configure Automated Deployment:**
-    *   Install the deployment package: `npm install gh-pages --save-dev`.
-    *   Add these scripts to your `package.json`:
-        ```json
+
+**Method B: Using GitHub CLI (Advanced/Faster)**
+If you have the `gh` tool installed and authenticated:
+```bash
+git init
+git add .
+git commit -m "Initial commit"
+gh repo create second-mountain-ready --public --source=. --remote=origin --push
+```
+
+### 3. Automated Deployment Configuration
+To make deployment a one-command process, you must configure your `package.json`:
+
+1.  **Install the deployment package:**
+    ```bash
+    npm install gh-pages --save-dev
+    ```
+2.  **Update `package.json`:** Add the `homepage` field and the deployment scripts.
+    ```json
+    {
+      "homepage": "https://yourusername.github.io/second-mountain-ready/",
+      "scripts": {
         "predeploy": "npm run build",
         "deploy": "gh-pages -d dist"
-        ```
-    *   Run `npm run deploy`. Your site will be live at `yourusername.github.io/second-mountain-ready`.
+      }
+    }
+    ```
+3.  **Deploy:** Run the command:
+    ```bash
+    npm run deploy
+    ```
 
 ---
 
-## Step 9: Pointing a Custom Domain
+## Step 9: Common Build Issues (TypeScript)
+When running `npm run deploy`, the process might fail if your code has "lint" or "type" errors. React's strict mode ensures only high-quality code reaches the web.
+
+**Common Error:** `error TS6133: 'Variable' is declared but its value is never read.`
+- **Why?** You imported a component (like an icon) or defined a variable but didn't use it in your UI.
+- **Fix:** Either remove the unused import or comment out the unused variable until you need it.
+
+---
+
+## Step 10: Pointing a Custom Domain
 If you purchased a domain (e.g., `heathercooper.com`), here is how to point it to your GitHub site:
 
 1.  **In your Domain Registrar (DNS Settings):**
