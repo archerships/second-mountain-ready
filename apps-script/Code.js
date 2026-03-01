@@ -1,16 +1,6 @@
 function doGet(e) {
   var props = PropertiesService.getScriptProperties();
   
-  // INITIAL SETUP: Remove this after one-time use or protect with hardcoded check
-  if (e.parameter.init_secrets === 'true') {
-    props.setProperties({
-      'ADMIN_PASSWORD': 'heather2026',
-      'API_KEY': 'secret-test-key-2026'
-    });
-    return ContentService.createTextOutput("Secrets Initialized Successfully. REMOVE the init_secrets check now.")
-      .setMimeType(ContentService.MimeType.TEXT);
-  }
-
   var apiKey = props.getProperty('API_KEY');
   if (e.parameter.key !== apiKey) {
     return ContentService.createTextOutput("Unauthorized: Valid API Key required.")

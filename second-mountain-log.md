@@ -219,3 +219,8 @@
 - Script Properties used for secret storage.
 ## 2026-03-01 00:42:38 - Secure Backend Deploy
 - Deployed Apps Script with 'init_secrets' and backend-based login support.
+## 2026-03-01 00:44:55 - Secrets Locked
+- Removed init_secrets logic from backend.
+- Verified secure E2E flow with API Key.
+## 2026-03-01 00:46:59 - Secure Batch Entry
+- Automatically entered 5 test users using the final secure backend.
