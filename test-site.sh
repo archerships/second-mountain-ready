@@ -42,7 +42,16 @@ for comp in "${CHECK_COMPONENTS[@]}"; do
     fi
 done
 
-# 4. Check for public assets
+# 4. Check for profile image name in JS Bundle
+echo "Verifying profile image configuration..." | tee -a "$LOG_FILE"
+IMAGE_REF=$(echo "$JS_CONTENT" | grep -o "heather-cooper.jpg" | head -n 1)
+if [ -n "$IMAGE_REF" ]; then
+    echo "✓ Profile image name found in JS bundle: $IMAGE_REF" | tee -a "$LOG_FILE"
+else
+    echo "✗ Profile image name missing from JS bundle" | tee -a "$LOG_FILE"
+fi
+
+# 5. Check for public assets
 echo "Checking for public assets..." | tee -a "$LOG_FILE"
 ASSETS=("heather-cooper.jpg" "vite.svg")
 

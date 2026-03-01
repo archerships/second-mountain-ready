@@ -66,3 +66,68 @@
 ## 2026-02-28 17:00:13 - Deployment Fix
 - Added try-catch blocks for localStorage to prevent crashes in restricted browsers.
 - Re-deployed with corrected base path for GitHub Pages subdirectories.
+## 2026-02-28 17:02:31 - Deployment Fix
+- Updated heather-cooper.jpg src in App.tsx to be relative, fixing broken image in subdirectories.
+## 2026-02-28 17:04:09 - Test Script Update
+- Updated test-site.sh with specific check for relative profile image path.
+- Verified profile image path is correctly configured and reachable.
+## 2026-02-28 17:04:32 - Test Script Refinement
+- Refined test-site.sh to search for image references within the compiled JS bundle.
+- Confirmed that the profile image is correctly configured as a relative path.
+## 2026-02-28 17:04:53 - Test Script Finalization
+- Finalized test-site.sh with robust image reference verification.
+- Confirmed the profile image name is present in the JS bundle and reachable on the server.
+## 2026-02-28 17:14:52 - CLI Google Integration
+- Installed @google/clasp for CLI-based Apps Script management.
+- Created apps-script/Code.js for automated deployment.
+## 2026-02-28 17:17:11 - Documentation Update
+- Updated TUTORIAL.md to include Step 6: Method B (CLI-based Google Sheets setup using Clasp).
+- Documented 'npx clasp login', 'clasp create', and 'clasp deploy' commands.
+## 2026-02-28 20:35:23 - Clasp Deployment Fix
+- Updated Code.js with explicit Spreadsheet ID to guarantee target.
+- Pushed and re-deployed the Apps Script Web App.
+## 2026-02-28 20:38:19 - Clasp Deployment Fix
+- Updated appsscript.json with ANYONE_ANONYMOUS webapp access.
+- Re-pushed and re-deployed the Apps Script Web App.
+## 2026-02-28 20:42:05 - Fresh Deployment
+- Re-initialized Clasp configuration and created a fresh 'Second Mountain Ready Leads' spreadsheet.
+- Spreadsheet ID: 1ek3WXu2JMMX2iKnOZQYC4Bmieq_BEsbdhQXL1twshJo
+- Script ID: 17Ci4xoCyhZJbscz01Op6CAqKpLyZpAwZipl5i1fWQV4aX_81AciNeXcP
+- Pushed Code.js and deployed as Web App.
+## 2026-02-28 20:44:13 - Clasp Deployment Update
+- Added doGet(e) function to Code.js to allow browser-based verification and authorization.
+- Re-pushed and re-deployed the Apps Script Web App.
+## 2026-02-28 20:46:14 - Final Backend Update
+- Updated Code.js to use getActiveSpreadsheet() for better container-bound script support.
+- Re-pushed and re-deployed the Apps Script Web App.
+## 2026-02-28 20:47:06 - Sheets Service Enabled
+- Explicitly enabled 'Sheets' advanced service in appsscript.json.
+- Re-pushed and re-deployed the Apps Script Web App.
+## 2026-02-28 20:47:48 - openByUrl Update
+- Updated Code.js to use openByUrl() for the spreadsheet connection.
+- Re-pushed and re-deployed the Apps Script Web App.
+## 2026-02-28 21:06:08 - Playwright E2E Setup
+- Installed @playwright/test and Chromium browser.
+- Created tests/intake.spec.ts for headless browser verification.
+- Confirmed E2E test covers form population, submission, and success state validation.
+## 2026-02-28 21:06:58 - Playwright E2E Success
+- Verified the live landing page with a headless browser.
+- Confirmed that the form submission triggers the success state.
+## 2026-02-28 21:13:17 - Full E2E Success
+- Verified that form data submitted via browser correctly reaches the Google Spreadsheet.
+- Backend verification confirms data integrity (Email and Name matching).
+## 2026-02-28 22:41:50 - Admin Protection Update
+- Added password protection for Admin mode (Password: heather2026).
+- Improved video management interface with a dedicated Login Modal.
+- Confirmed CRUD operations for video links are functional in Admin mode.
+## 2026-02-28 23:02:09 - Asset Update
+- Replaced profile image with actual portrait: heather-cooper-portrait.jpg
+## 2026-02-28 23:04:59 - Contact Information Update
+- Updated contact information: Facebook, Location, Phone, and Email.
+- Email updated to: heather.cooper35@gmail.com
+- Phone updated to: (208) 283-3707
+- Added Location: 199 N. Capitol Blvd. Suite 301 Boise, ID 83702
+- Added Facebook Link: https://www.facebook.com/cooperbits/
+## 2026-02-28 23:05:29 - Bio Update
+- Updated professional bio with detailed philosophy and personal background.
+- Added grid-based list of Additional Certifications.

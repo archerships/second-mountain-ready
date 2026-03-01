@@ -73,10 +73,36 @@ The intake form collects:
 ## Step 6: Connect to Google Sheets (The Backend)
 Since we want to avoid a complex database, we use **Google Apps Script** as a "serverless" backend.
 
-1. **The Spreadsheet:** Create a Google Sheet with headers.
-2. **The Script:** Write a `doPost(e)` function in the Apps Script editor that parses incoming JSON and appends it as a new row.
-3. **The Deployment:** Deploy the script as a **Web App** with access set to "Anyone."
-4. **The Connection:** Paste the resulting URL into your React `handleFormSubmit` function.
+### Method A: Manual Setup (Beginner)
+1. **The Spreadsheet:** Create a Google Sheet and add headers (Timestamp, First Name, Last Name, etc.).
+2. **The Script:** Go to **Extensions > Apps Script**. Write a `doPost(e)` function that parses JSON and appends a row.
+3. **The Deployment:** Click **Deploy > New Deployment**. Set type to "Web App", Execute as "Me", and Access to "Anyone".
+4. **The Connection:** Copy the Web App URL and paste it into `src/App.tsx`.
+
+### Method B: Using Google Clasp (Advanced/CLI)
+If you want to manage your backend from the terminal:
+1. **Install Clasp:** `npm install @google/clasp --save-dev`
+2. **Login:** `npx clasp login` (This opens a browser once to authorize your account).
+3. **ONE-TIME SETUP:** Create the script & spreadsheet:
+   ```bash
+   npx clasp create --type sheets --title "Second Mountain Ready Leads" --rootDir ./apps-script
+   ```
+   *Note: Only run this once! It creates a new spreadsheet and script.*
+4. **PUSH CHANGES:** `npx clasp push` (Uploads your `Code.js` to Google).
+5. **DEPLOY/UPDATE:** 
+   ```bash
+   npx clasp deploy --description "Production Web App"
+   ```
+   *Note: This command generates the Web App URL for your `src/App.tsx`.*
+
+---
+
+## Step 11: Final Security Authorization
+Google requires a one-time manual authorization for scripts to write to a spreadsheet.
+
+1. **Authorize Link:** Open your deployment URL in a browser (e.g., `https://script.google.com/macros/s/.../exec`).
+2. **Success Message:** You should see "Second Mountain Ready API is live!".
+3. **If Authorization is needed:** Google will prompt you to "Authorize access". Follow the steps to grant permission to the script to access your Drive and Sheets.
 
 ---
 
