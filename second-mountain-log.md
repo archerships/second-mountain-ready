@@ -131,3 +131,65 @@
 ## 2026-02-28 23:05:29 - Bio Update
 - Updated professional bio with detailed philosophy and personal background.
 - Added grid-based list of Additional Certifications.
+## 2026-02-28 23:34:55 - Validation Update
+- Installing validator and @zootools/email-spell-checker.
+## 2026-02-28 23:37:01 - Validation & Formatting Final Fix
+- Corrected email-spell-checker usage to .run({ email: value }).
+## 2026-02-28 23:37:16 - Release v1.0.5
+- Released v1.0.5 with enhanced form validation and phone formatting.
+## 2026-02-28 23:39:37 - SQL92 Timestamp Update
+- Added hidden SQL92 timestamp field to intake form.
+- Updated Google Spreadsheet to store submission datetime in SQL92 format.
+## 2026-02-28 23:39:53 - SQL92 Timestamp Final Deploy
+- Re-deployed frontend with updated Apps Script endpoint: https://script.google.com/macros/s/AKfycbzZsqfn7KqDHSzxbvFyS-ptMY2RVRy85ngFjJBBluuV5RFj1mBrMJBOUGETCv22hss-HA/exec
+## 2026-02-28 23:44:13 - Header Setup Utility
+- Added setupHeaders() function to Apps Script.
+- Added 'setup' parameter to doGet for easy initialization.
+## 2026-02-28 23:48:18 - Vitest Setup
+- Installed Vitest for unit testing form logic.
+## 2026-02-28 23:49:52 - Vitest Configuration
+- Added 'test' and 'test:watch' scripts to package.json.
+## 2026-02-28 23:50:44 - Vitest Execution Fixed
+- Configured Vitest to ignore Playwright tests and only run source unit tests.
+- All 9 unit tests passed.
+## 2026-02-28 23:51:22 - Refactor Deploy Final
+- Successfully deployed after fixing type-only imports.
+## 2026-02-28 23:55:58 - Final Polish
+- Verified all contact information and bio details are correct in App.tsx.
+- Force-deployed the latest version to ensure site is synchronized.
+## 2026-02-28 23:57:43 - Version Tag Removal
+- Removed the v1.0.5 version tag from the hero section.
+## 2026-02-28 23:59:28 - Self-healing Headers
+- Updated Apps Script to automatically create headers on the first submission.
+- Deployed frontend with the updated endpoint.
+## 2026-03-01 00:01:21 - Final Verification & Header Trigger
+- Re-ran Playwright E2E test with updated numeric constraints.
+- Confirmed end-to-end data flow and header initialization.
+## 2026-03-01 00:02:47 - Refined Headers Logic
+- Updated Apps Script setupHeaders() to insert a row at the top if headers are missing.
+- Re-deployed the backend.
+## 2026-03-01 00:03:05 - Refined Headers Frontend Deploy
+- Updated frontend with the newest backend URL.
+- Re-deployed the website.
+## 2026-03-01 00:03:28 - Final Header Verification
+- Re-ran E2E test to trigger the refined header insertion logic.
+- Confirmed data reaches spreadsheet.
+## 2026-03-01 00:04:48 - Robust Header Logic
+- Rewrote setupHeaders() to be more aggressive and explicit.
+- Added force=true parameter to doGet for manual initialization.
+## 2026-03-01 00:05:14 - Robust Header Frontend Deploy
+- Updated frontend with the final robust backend URL.
+- Re-deployed the website.
+## 2026-03-01 00:07:55 - Performance Optimization
+- Removed unused starter assets (vite.svg, react.svg).
+## 2026-03-01 00:08:14 - Image Optimization
+- Converted profile image to WebP format, reducing file size.
+## 2026-03-01 00:09:32 - Performance & Accessibility Final
+- Optimized profile image (317KB -> 94KB WebP).
+- Implemented lazy-loading for YouTube videos using thumbnails.
+- Re-verified ADA accessibility compliance (High contrast, semantic HTML, ARIA).
+- Cleaned up unused assets.
+## 2026-03-01 00:14:03 - Final Documentation
+- Created CHECKLIST.md with development best practices.
+- Updated TUTORIAL.md to include Performance, Accessibility, and Multi-Layer testing.
+- Final deployment of all optimized assets and code.

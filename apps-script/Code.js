@@ -1,14 +1,24 @@
 function doGet(e) {
+  if (e.parameter.setup || e.parameter.force) {
+    try {
+      setupHeaders(true);
+      return ContentService.createTextOutput("Success: Headers have been forced to the top of the sheet.")
+        .setMimeType(ContentService.MimeType.TEXT);
+    } catch (err) {
+      return ContentService.createTextOutput("Error: " + err.message)
+        .setMimeType(ContentService.MimeType.TEXT);
+    }
+  }
+  
   if (e.parameter.verify) {
     try {
-      var ss = SpreadsheetApp.openByUrl('https://docs.google.com/spreadsheets/d/1ek3WXu2JMMX2iKnOZQYC4Bmieq_BEsbdhQXL1twshJo/edit');
-      var sheet = ss.getSheetByName('Sheet1') || ss.getSheets()[0];
+      var ss = SpreadsheetApp.openById('1ek3WXu2JMMX2iKnOZQYC4Bmieq_BEsbdhQXL1twshJo');
+      var sheet = ss.getSheets()[0];
       var data = sheet.getDataRange().getValues();
       var emailToFind = e.parameter.verify;
       
-      // Search from the bottom (newest first)
       for (var i = data.length - 1; i >= 0; i--) {
-        if (data[i][4] === emailToFind) { // Column E is email (index 4)
+        if (data[i][4] === emailToFind) { 
           return ContentService.createTextOutput(JSON.stringify({
             "result": "found",
             "data": {
@@ -30,11 +40,38 @@ function doGet(e) {
     .setMimeType(ContentService.MimeType.TEXT);
 }
 
+function setupHeaders(force) {
+  var ss = SpreadsheetApp.openById('1ek3WXu2JMMX2iKnOZQYC4Bmieq_BEsbdhQXL1twshJo');
+  var sheet = ss.getSheets()[0];
+  var headers = [
+    "Google Timestamp", 
+    "First Name", 
+    "Last Name", 
+    "Phone", 
+    "Email", 
+    "GLP-1 Months", 
+    "Fitness Goals", 
+    "SQL92 Timestamp"
+  ];
+  
+  var firstCellValue = sheet.getRange(1, 1).getValue();
+  
+  // If the first cell isn't our header, or we are forcing it
+  if (firstCellValue !== headers[0] || force) {
+    sheet.insertRowBefore(1);
+    sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+    sheet.setFrozenRows(1);
+    // Make headers bold
+    sheet.getRange(1, 1, 1, headers.length).setFontWeight("bold");
+  }
+}
+
 function doPost(e) {
   try {
-    // Using the full URL which is often more reliable for authorization
-    var ss = SpreadsheetApp.openByUrl('https://docs.google.com/spreadsheets/d/1ek3WXu2JMMX2iKnOZQYC4Bmieq_BEsbdhQXL1twshJo/edit');
-    var sheet = ss.getSheetByName('Sheet1') || ss.getSheets()[0];
+    setupHeaders(false);
+
+    var ss = SpreadsheetApp.openById('1ek3WXu2JMMX2iKnOZQYC4Bmieq_BEsbdhQXL1twshJo');
+    var sheet = ss.getSheets()[0];
     
     var data = JSON.parse(e.postData.contents);
     
@@ -45,17 +82,15 @@ function doPost(e) {
       data.phone, 
       data.email, 
       data.glp1Duration, 
-      data.fitnessGoals
+      data.fitnessGoals,
+      data.submissionTime
     ]);
     
     return ContentService.createTextOutput(JSON.stringify({"result": "success"}))
       .setMimeType(ContentService.MimeType.JSON);
       
   } catch (error) {
-    return ContentService.createTextOutput(JSON.stringify({
-      "result": "error", 
-      "error": error.message
-    }))
-    .setMimeType(ContentService.MimeType.JSON);
+    return ContentService.createTextOutput(JSON.stringify({"result": "error", "error": error.message}))
+      .setMimeType(ContentService.MimeType.JSON);
   }
 }

@@ -44,7 +44,7 @@ done
 
 # 4. Check for profile image name in JS Bundle
 echo "Verifying profile image configuration..." | tee -a "$LOG_FILE"
-IMAGE_REF=$(echo "$JS_CONTENT" | grep -o "heather-cooper.jpg" | head -n 1)
+IMAGE_REF=$(echo "$JS_CONTENT" | grep -o "heather-cooper.webp" | head -n 1)
 if [ -n "$IMAGE_REF" ]; then
     echo "✓ Profile image name found in JS bundle: $IMAGE_REF" | tee -a "$LOG_FILE"
 else
@@ -53,7 +53,7 @@ fi
 
 # 5. Check for public assets
 echo "Checking for public assets..." | tee -a "$LOG_FILE"
-ASSETS=("heather-cooper.jpg" "vite.svg")
+ASSETS=("heather-cooper.webp" "vite.svg")
 
 for asset in "${ASSETS[@]}"; do
     ASSET_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${SITE_URL}${asset}")

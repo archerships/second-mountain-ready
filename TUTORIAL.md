@@ -1,228 +1,84 @@
 # Tutorial: Building the "Second Mountain Ready" Landing Page
 
-This tutorial provides a step-by-step guide to replicating the "Second Mountain Ready" landing page—a high-aesthetic, functional React application designed for personal trainers.
+This tutorial provides a step-by-step guide to replicating the "Second Mountain Ready" landing page—a high-aesthetic, high-performance React application designed for professional personal trainers.
 
 ## Prerequisites
-- **Node.js** (v18+) installed on your machine.
+- **Node.js** (v18+) installed.
 - **Terminal/Command Line** access.
-- A basic understanding of **React** and **CSS**.
+- A **GitHub Account** (for free hosting).
+- A **Google Account** (for the lead spreadsheet).
 
 ---
 
 ## Step 1: Scaffold the Project
-We use **Vite** for a fast, modern development environment.
+We use **Vite** for a fast development environment and **TypeScript** for reliability.
 
-1. Open your terminal and create the project:
+1. Create the project:
    ```bash
    npm create vite@latest second-mountain-ready -- --template react-ts
    cd second-mountain-ready
    npm install
    ```
-2. Install **Lucide React** for professional iconography:
+2. Install Core Libraries:
    ```bash
-   npm install lucide-react
+   # Icons, Validation, and Deployment tools
+   npm install lucide-react validator @zootools/email-spell-checker
+   npm install -D gh-pages vitest jsdom @playwright/test @google/clasp
    ```
 
 ---
 
-## Step 2: Define the Design System (CSS)
-Create a professional look using **Vanilla CSS Variables**. Open `src/App.css` and replace its content with a system that defines:
-- **Primary Colors:** Deep blues (`#2c5282`) for trust and authority.
-- **Accent Colors:** Health-focused greens (`#48bb78`) for action.
-- **Responsive Layouts:** Using CSS Grid for the video gallery and Flexbox for the header.
+## Step 2: High-Aesthetic & Accessible Design
+Open `src/App.css`. Use **Vanilla CSS Variables** to define a professional, high-contrast palette that meets ADA standards for the elderly.
 
-*Key Concept:* Use `:root` variables to make it easy to change the brand's "look and feel" in one place.
+*Key Tip:* Increase the base `font-size` to `1.125rem` (18px) and use a dark text-light color (`#4a5568`) to ensure readability.
 
 ---
 
-## Step 3: Build the Core Application logic
-Open `src/App.tsx`. We use React **Functional Components** and **Hooks** to manage the site.
-
-### 1. State Management
-We use the `useState` hook for:
-- **Admin Mode:** Toggling the ability to edit the site.
-- **Videos:** Storing a list of YouTube/Trainerize links.
-- **Form Data:** Tracking user input in the intake form.
-
-### 2. Persistence with LocalStorage
-To ensure Heather's video links aren't lost when she refreshes the page, we use the `useEffect` hook to save and load the `videos` array to the browser's `localStorage`.
-
-### 3. Video Handling
-Create a function that takes a standard YouTube URL and converts it into an **Embed URL** (e.g., changing `watch?v=ID` to `embed/ID`) so it can play directly on the page inside an `<iframe>`.
+## Step 3: Performance Optimization
+To ensure the site loads instantly:
+1. **Optimize Images:** Convert JPEGs to **WebP**. Use the `compress.py` utility in your workspace.
+2. **Lazy-Load Videos:** Create a custom `VideoCard` component. Show a static YouTube thumbnail first; only load the heavy `<iframe>` player when the user clicks "Play."
 
 ---
 
-## Step 4: Create the "Admin" Experience
-A key requirement was allowing the trainer to manage her own videos without touching code.
-1. Add an "Admin" button in the header.
-2. Create a conditional "Add Video" form that only appears when `isAdmin` is true.
-3. Add a "Delete" button (trash icon) to each video card that is only visible in Admin mode.
+## Step 4: The Lead Capture System (Google Sheets)
+We use **Google Apps Script** as a serverless backend.
+
+1. **The Code:** Create an `apps-script/Code.js` with a `doPost(e)` function to append data to your spreadsheet.
+2. **Self-Healing Headers:** Add a function that automatically creates and freezes headers (`Google Timestamp`, `First Name`, etc.) if they are missing.
+3. **The Deployment:**
+   - Run `npx clasp login` to authorize.
+   - Run `npx clasp create --type sheets --title "Leads"` once.
+   - Run `npx clasp push` and `npx clasp deploy` to get your Web App URL.
+   - **Crucial:** Open the URL once in a browser to click **"Allow"** for Google's one-time safety check.
 
 ---
 
-## Step 5: Implement the Lead Capture Form
-The intake form collects:
-- Name, Email, Phone.
-- **GLP-1 Duration:** A specialized field for Heather's niche.
-- **Fitness Goals:** A text area for qualitative data.
-
-*Developer Note:* The form uses a "controlled component" pattern, where every keystroke updates the React state.
+## Step 5: Advanced Form Validation
+Protect your spreadsheet from "bad data":
+- **Phone:** Auto-format to `208‑283‑3707` using non-breaking hyphens.
+- **Email:** Use `validator.js` and an email spell-checker to catch "gnail.com" typos.
+- **Hidden Fields:** Include a `submissionTime` in SQL92 format (`YYYY-MM-DD HH:MM:SS`) for your records.
 
 ---
 
-## Step 6: Connect to Google Sheets (The Backend)
-Since we want to avoid a complex database, we use **Google Apps Script** as a "serverless" backend.
-
-### Method A: Manual Setup (Beginner)
-1. **The Spreadsheet:** Create a Google Sheet and add headers (Timestamp, First Name, Last Name, etc.).
-2. **The Script:** Go to **Extensions > Apps Script**. Write a `doPost(e)` function that parses JSON and appends a row.
-3. **The Deployment:** Click **Deploy > New Deployment**. Set type to "Web App", Execute as "Me", and Access to "Anyone".
-4. **The Connection:** Copy the Web App URL and paste it into `src/App.tsx`.
-
-### Method B: Using Google Clasp (Advanced/CLI)
-If you want to manage your backend from the terminal:
-1. **Install Clasp:** `npm install @google/clasp --save-dev`
-2. **Login:** `npx clasp login` (This opens a browser once to authorize your account).
-3. **ONE-TIME SETUP:** Create the script & spreadsheet:
-   ```bash
-   npx clasp create --type sheets --title "Second Mountain Ready Leads" --rootDir ./apps-script
-   ```
-   *Note: Only run this once! It creates a new spreadsheet and script.*
-4. **PUSH CHANGES:** `npx clasp push` (Uploads your `Code.js` to Google).
-5. **DEPLOY/UPDATE:** 
-   ```bash
-   npx clasp deploy --description "Production Web App"
-   ```
-   *Note: This command generates the Web App URL for your `src/App.tsx`.*
+## Step 6: Multi-Layer Testing
+To ensure the site never breaks during future updates:
+1. **Unit Tests (Vitest):** Create `formUtils.test.ts` to verify your formatting and validation logic.
+2. **E2E Tests (Playwright):** Create `intake.spec.ts`. This script opens a real browser, fills out the form, and then **calls the backend API** to verify the data actually landed in the spreadsheet.
 
 ---
 
-## Step 11: Final Security Authorization
-Google requires a one-time manual authorization for scripts to write to a spreadsheet.
-
-1. **Authorize Link:** Open your deployment URL in a browser (e.g., `https://script.google.com/macros/s/.../exec`).
-2. **Success Message:** You should see "Second Mountain Ready API is live!".
-3. **If Authorization is needed:** Google will prompt you to "Authorize access". Follow the steps to grant permission to the script to access your Drive and Sheets.
+## Step 7: Free Hosting (GitHub Pages)
+1. **Vite Config:** Set `base: '/repo-name/'` in `vite.config.ts`.
+2. **Relative Paths:** Ensure all images use relative paths (e.g., `src="photo.webp"`, NO leading slash).
+3. **Deploy:** Run `npm run deploy`. Your site will be live at `username.github.io/repo-name`.
 
 ---
 
-## Step 7: Adding Real Assets
-To replace placeholders with real photos:
-1. Place your image files in the `public/` folder of your project.
-2. Reference them in your code using a simple absolute path (e.g., `<img src="/my-photo.jpg" />`).
-
----
-
-## Running the Site
-To see your work in action:
-```bash
-npm run dev
-```
-Navigate to `http://localhost:5173/` in your browser.
-
----
-
-## Summary of Architecture
-- **Frontend:** React + TypeScript (Vite).
-- **Styling:** Vanilla CSS (Modern CSS Grid/Flex).
-- **Icons:** Lucide-React.
-- **Persistence:** Browser LocalStorage (for videos).
-- **Backend:** Google Apps Script + Google Sheets (for leads).
-
----
-
-## Step 8: Get a Free Domain & Hosting
-Once your site is ready locally, you need to make it available to the world.
-
-### 1. Free Domain Options
-*   **Subdomains (Truly Free):** The easiest way to get a free domain is using your host's subdomain. For example, if you use GitHub Pages, your site will be `yourusername.github.io/second-mountain-ready`. This is professional, secure (HTTPS), and permanent.
-*   **Educational (GitHub Student Pack):** If you are a student, you can get a free `.me` or `.tech` domain for 1 year through the GitHub Student Developer Pack.
-*   **Low-Cost TLDs:** If you want a custom name like `secondmountainready.com`, providers like Namecheap often offer `.site` or `.online` domains for ~$1.00 for the first year.
-
-### 2. Hosting with GitHub Pages (Free)
-GitHub Pages is the best free host for static sites like this one.
-
-**Method A: Using GitHub Desktop or Web (Beginner)**
-1.  **Initialize Git:**
-    ```bash
-    git init
-    git add .
-    git commit -m "Initial commit"
-    ```
-2.  **Create a Repository:** Go to GitHub.com and create a new repository named `second-mountain-ready`.
-3.  **Push to GitHub:**
-    ```bash
-    git remote add origin https://github.com/yourusername/second-mountain-ready.git
-    git branch -M main
-    git push -u origin main
-    ```
-
-**Method B: Using GitHub CLI (Advanced/Faster)**
-If you have the `gh` tool installed and authenticated:
-```bash
-git init
-git add .
-git commit -m "Initial commit"
-gh repo create second-mountain-ready --public --source=. --remote=origin --push
-```
-
-### 3. Automated Deployment Configuration
-To make deployment a one-command process, you must configure your `package.json`:
-
-1.  **Install the deployment package:**
-    ```bash
-    npm install gh-pages --save-dev
-    ```
-2.  **Update `package.json`:** Add the `homepage` field and the deployment scripts.
-    ```json
-    {
-      "homepage": "https://yourusername.github.io/second-mountain-ready/",
-      "scripts": {
-        "predeploy": "npm run build",
-        "deploy": "gh-pages -d dist"
-      }
-    }
-    ```
-3.  **Deploy:** Run the command:
-    ```bash
-    npm run deploy
-    ```
-
----
-
-## Step 9: Common Build Issues (TypeScript)
-When running `npm run deploy`, the process might fail if your code has "lint" or "type" errors. React's strict mode ensures only high-quality code reaches the web.
-
-**Common Error:** `error TS6133: 'Variable' is declared but its value is never read.`
-- **Why?** You imported a component (like an icon) or defined a variable but didn't use it in your UI.
-- **Fix:** Either remove the unused import or comment out the unused variable until you need it.
-
----
-
-## Step 10: Pointing a Custom Domain
-If you purchased a domain (e.g., `heathercooper.com`), here is how to point it to your GitHub site:
-
-1.  **In your Domain Registrar (DNS Settings):**
-    *   **Add 4 "A" Records** pointing to GitHub's IPs:
-        *   `185.199.108.153`
-        *   `185.199.109.153`
-        *   `185.199.110.153`
-        *   `185.199.111.153`
-    *   **Add a CNAME Record** for `www` pointing to `yourusername.github.io`.
-2.  **In GitHub Repository Settings:**
-    *   Go to **Settings** > **Pages**.
-    *   Under **Custom Domain**, type your domain name and click **Save**.
-    *   Check **Enforce HTTPS** (Wait a few hours for the SSL certificate to issue).
-
----
-
-## Step 10: Updating Your Website
-Updating the site is a simple three-step process:
-
-1.  **Make Changes:** Edit your code locally (e.g., adding a new video or changing text).
-2.  **Test Locally:** Run `npm run dev` to ensure everything looks right.
-3.  **Deploy:** Run the command:
-    ```bash
-    npm run deploy
-    ```
-    This will automatically build the new version and push it to the live web. Your changes will appear online within 1-2 minutes.
+## Maintenance & Updates
+Updating is a 3-step loop:
+1. **Edit:** Change code locally.
+2. **Verify:** Run `npm test` and `npx playwright test`.
+3. **Push:** Run `npm run deploy`. Your changes go live in 60 seconds.

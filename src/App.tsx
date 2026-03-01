@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Mail, Phone, Plus, Trash2, Send, CheckCircle, Facebook, MapPin } from 'lucide-react';
+import runEmailSpellChecker from '@zootools/email-spell-checker';
+import { formatPhoneNumber, validateForm as performValidation } from './utils/formUtils';
+import type { FormData, FormErrors } from './utils/formUtils';
 import './App.css';
 
 interface VideoLink {
@@ -8,14 +11,53 @@ interface VideoLink {
   title: string;
 }
 
-interface FormData {
-  firstName: string;
-  lastName: string;
-  phone: string;
-  email: string;
-  glp1Duration: string;
-  fitnessGoals: string;
-}
+const VideoCard: React.FC<{ 
+  video: VideoLink, 
+  isAdmin: boolean, 
+  onDelete: (id: string) => void 
+}> = ({ video, isAdmin, onDelete }) => {
+  const [isLoaded, setIsLoaded] = React.useState(false);
+  
+  // Extract ID for thumbnail
+  const videoId = video.url.split('/').pop()?.split('?')[0];
+  const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
+
+  return (
+    <div className="video-card">
+      {isAdmin && (
+        <button 
+          className="delete-btn" 
+          onClick={() => onDelete(video.id)}
+          aria-label="Delete video"
+        >
+          <Trash2 size={16} />
+        </button>
+      )}
+      
+      {!isLoaded ? (
+        <div 
+          className="video-placeholder" 
+          onClick={() => setIsLoaded(true)}
+          style={{ backgroundImage: `url(${thumbnailUrl})` }}
+        >
+          <div className="play-button" aria-hidden="true">▶</div>
+        </div>
+      ) : (
+        <iframe 
+          src={`${video.url}?autoplay=1`} 
+          title={video.title}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+          allowFullScreen
+        />
+      )}
+      
+      <div className="video-info">
+        <h4>{video.title}</h4>
+        <p style={{ fontSize: '0.8rem', color: 'var(--text-light)' }}>Trainerize Exclusive</p>
+      </div>
+    </div>
+  );
+};
 
 const App: React.FC = () => {
   const [isAdmin, setIsAdmin] = useState(false);
@@ -32,6 +74,9 @@ const App: React.FC = () => {
   const [newVideoUrl, setNewVideoUrl] = useState('');
   const [newVideoTitle, setNewVideoTitle] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formErrors, setFormErrors] = useState<FormErrors>({});
+  const [emailSuggestion, setEmailSuggestion] = useState<string | null>(null);
   const [formData, setFormData] = useState<FormData>({
     firstName: '',
     lastName: '',
@@ -109,15 +154,48 @@ const App: React.FC = () => {
 
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    
+    if (name === 'phone') {
+      setFormData(prev => ({ ...prev, phone: formatPhoneNumber(value) }));
+    } else if (name === 'email') {
+      setFormData(prev => ({ ...prev, email: value }));
+      const result = runEmailSpellChecker.run({ email: value });
+      if (result) {
+        setEmailSuggestion(result.full);
+      } else {
+        setEmailSuggestion(null);
+      }
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
+    
+    // Clear error when user types
+    if (formErrors[name as keyof FormErrors]) {
+      setFormErrors(prev => ({ ...prev, [name]: undefined }));
+    }
   };
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbz6O2CcEnkt-Nfrp-Xef6ZpqWsL-cnUdgsp-ZrKsqE6g_u8cmMhVlu5vvdkZd5QsRiHbA/exec';
+    const errors = performValidation(formData);
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+
+    setIsSubmitting(true);
+    const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbztJL3r18lOuFSUrWtFTfN-Y7rIG3Sbus2C1tdq-AsVcnyHEXerh0_6MUarW2OROyTCXA/exec';
     
-    console.log('Submitting form data to Google Sheets:', formData);
+    const now = new Date();
+    const sql92Time = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+    
+    const submissionData = {
+      ...formData,
+      submissionTime: sql92Time
+    };
+
+    console.log('Submitting form data to Google Sheets:', submissionData);
     
     try {
       const response = await fetch(GOOGLE_SHEET_URL, {
@@ -126,7 +204,7 @@ const App: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(submissionData),
       });
       
       console.log('Form submission response:', response);
@@ -140,9 +218,12 @@ const App: React.FC = () => {
         glp1Duration: '',
         fitnessGoals: ''
       });
+      setEmailSuggestion(null);
     } catch (error) {
       console.error('Error submitting form:', error);
       alert('There was an error submitting the form. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -204,7 +285,6 @@ const App: React.FC = () => {
             Specialized physical training for seniors navigating life transitions 
             and GLP-1 therapy journeys. Reclaim your vitality and strength with Heather Cooper.
           </p>
-          <p style={{ fontSize: '0.7rem', opacity: 0.5, marginTop: '-1rem', marginBottom: '2rem' }}>v1.0.4 - Updated Contact Info</p>
           <a href="#intake" className="btn btn-primary">Start Your Journey</a>
         </div>
       </section>
@@ -213,7 +293,7 @@ const App: React.FC = () => {
         <div className="profile">
           <div style={{ borderRadius: '1rem', overflow: 'hidden', height: '500px' }}>
              <img 
-               src="heather-cooper.jpg" 
+               src="heather-cooper.webp" 
                alt="Heather Cooper - Personal Trainer" 
                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
              />
@@ -306,23 +386,12 @@ const App: React.FC = () => {
               </p>
             ) : (
               videos.map((v) => (
-                <div key={v.id} className="video-card">
-                  {isAdmin && (
-                    <button className="delete-btn" onClick={() => handleDeleteVideo(v.id)}>
-                      <Trash2 size={16} />
-                    </button>
-                  )}
-                  <iframe 
-                    src={v.url} 
-                    title={v.title}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                    allowFullScreen
-                  />
-                  <div className="video-info">
-                    <h4>{v.title}</h4>
-                    <p style={{ fontSize: '0.8rem', color: '#718096' }}>Trainerize Exclusive</p>
-                  </div>
-                </div>
+                <VideoCard 
+                  key={v.id} 
+                  video={v} 
+                  isAdmin={isAdmin} 
+                  onDelete={handleDeleteVideo} 
+                />
               ))
             )}
           </div>
@@ -347,31 +416,88 @@ const App: React.FC = () => {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                   <div className="form-group">
                     <label>First Name</label>
-                    <input type="text" name="firstName" required value={formData.firstName} onChange={handleFormChange} />
+                    <input 
+                      type="text" 
+                      name="firstName" 
+                      className={formErrors.firstName ? 'error' : ''}
+                      required 
+                      value={formData.firstName} 
+                      onChange={handleFormChange} 
+                    />
+                    {formErrors.firstName && <span className="error-text">{formErrors.firstName}</span>}
                   </div>
                   <div className="form-group">
                     <label>Last Name</label>
-                    <input type="text" name="lastName" required value={formData.lastName} onChange={handleFormChange} />
+                    <input 
+                      type="text" 
+                      name="lastName" 
+                      className={formErrors.lastName ? 'error' : ''}
+                      required 
+                      value={formData.lastName} 
+                      onChange={handleFormChange} 
+                    />
+                    {formErrors.lastName && <span className="error-text">{formErrors.lastName}</span>}
                   </div>
                 </div>
                 <div className="form-group">
                   <label>Phone Number</label>
-                  <input type="tel" name="phone" required value={formData.phone} onChange={handleFormChange} />
+                  <input 
+                    type="tel" 
+                    name="phone" 
+                    className={formErrors.phone ? 'error' : ''}
+                    placeholder="208-283-3707"
+                    required 
+                    value={formData.phone} 
+                    onChange={handleFormChange} 
+                  />
+                  {formErrors.phone && <span className="error-text">{formErrors.phone}</span>}
                 </div>
                 <div className="form-group">
                   <label>Email Address</label>
-                  <input type="email" name="email" required value={formData.email} onChange={handleFormChange} />
+                  <input 
+                    type="email" 
+                    name="email" 
+                    className={formErrors.email ? 'error' : ''}
+                    required 
+                    value={formData.email} 
+                    onChange={handleFormChange} 
+                  />
+                  {formErrors.email && <span className="error-text">{formErrors.email}</span>}
+                  {emailSuggestion && (
+                    <div className="suggestion-text">
+                      Did you mean <button type="button" onClick={() => {
+                        setFormData(prev => ({ ...prev, email: emailSuggestion }));
+                        setEmailSuggestion(null);
+                        setFormErrors(prev => ({ ...prev, email: undefined }));
+                      }}>{emailSuggestion}</button>?
+                    </div>
+                  )}
                 </div>
                 <div className="form-group">
-                  <label>How long have you been taking GLP1?</label>
-                  <input type="text" name="glp1Duration" placeholder="e.g., 3 months, not currently taking" value={formData.glp1Duration} onChange={handleFormChange} />
+                  <label>How many months have you been taking a GLP1 drug?</label>
+                  <input 
+                    type="number" 
+                    name="glp1Duration" 
+                    min="0"
+                    max="120"
+                    className={formErrors.glp1Duration ? 'error' : ''}
+                    placeholder="0 - 120" 
+                    value={formData.glp1Duration} 
+                    onChange={handleFormChange} 
+                  />
+                  {formErrors.glp1Duration && <span className="error-text">{formErrors.glp1Duration}</span>}
                 </div>
                 <div className="form-group">
                   <label>What are your fitness goals?</label>
                   <textarea name="fitnessGoals" rows={4} value={formData.fitnessGoals} onChange={handleFormChange} />
                 </div>
-                <button type="submit" className="btn btn-primary" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-                  <Send size={18} /> Submit Application
+                <button 
+                  type="submit" 
+                  disabled={isSubmitting}
+                  className="btn btn-primary" 
+                  style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', opacity: isSubmitting ? 0.7 : 1 }}
+                >
+                  <Send size={18} /> {isSubmitting ? 'Sending...' : 'Submit Application'}
                 </button>
               </form>
             )}

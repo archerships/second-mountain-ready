@@ -10,7 +10,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Second Mountain Ready - E2E Verification', () => {
   const SITE_URL = 'https://archerships.github.io/second-mountain-ready/';
-  const VERIFY_URL = 'https://script.google.com/macros/s/AKfycbz6O2CcEnkt-Nfrp-Xef6ZpqWsL-cnUdgsp-ZrKsqE6g_u8cmMhVlu5vvdkZd5QsRiHbA/exec';
+  const VERIFY_URL = 'https://script.google.com/macros/s/AKfycbztJL3r18lOuFSUrWtFTfN-Y7rIG3Sbus2C1tdq-AsVcnyHEXerh0_6MUarW2OROyTCXA/exec';
 
   test('should submit form and verify data in spreadsheet', async ({ page, request }) => {
     const uniqueId = Date.now().toString();
@@ -25,10 +25,10 @@ test.describe('Second Mountain Ready - E2E Verification', () => {
     console.log('Filling out form with email: ' + testEmail);
     await page.fill('input[name="firstName"]', firstName);
     await page.fill('input[name="lastName"]', lastName);
-    await page.fill('input[name="phone"]', '555-TEST');
+    await page.fill('input[name="phone"]', '2082833707'); // Use valid length digits
     await page.fill('input[name="email"]', testEmail);
-    await page.fill('input[name="glp1Duration"]', 'E2E Validation Run');
-    await page.fill('textarea[name="fitnessGoals"]', 'Verify that data reaches the spreadsheet.');
+    await page.fill('input[name="glp1Duration"]', '12'); // Must be a number 0-120
+    await page.fill('textarea[name="fitnessGoals"]', 'Verify that data reaches the spreadsheet and headers are triggered.');
 
     console.log('Submitting...');
     await page.click('button[type="submit"]');
