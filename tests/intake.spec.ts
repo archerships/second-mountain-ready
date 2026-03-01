@@ -13,9 +13,12 @@ import { faker } from '@faker-js/faker';
 test.describe('Second Mountain Ready - E2E Verification', () => {
   const SITE_URL = 'https://archerships.github.io/second-mountain-ready/';
   const VERIFY_URL = 'https://script.google.com/macros/s/AKfycby_4od9HbaC2TyZlnFVvh24XxYmNtM5ZCmY0vh10wR_D_Jb3yO4v2tNtKZKfnq3nJeQ8Q/exec';
-  const API_KEY = 'secret-test-key-2026';
+  const API_KEY = process.env.API_KEY;
 
   test('should submit form and verify data in spreadsheet', async ({ page, request }) => {
+    if (!API_KEY) {
+      throw new Error('API_KEY environment variable is not set.');
+    }
     // Generate realistic test data
     const firstName = faker.person.firstName();
     const lastName = faker.person.lastName();
