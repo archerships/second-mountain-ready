@@ -141,7 +141,7 @@ const App: React.FC = () => {
         <div className="profile">
           <div style={{ borderRadius: '1rem', overflow: 'hidden', height: '500px' }}>
              <img 
-               src="/heather-cooper.jpg" 
+               src="heather-cooper.jpg" 
                alt="Heather Cooper - Personal Trainer" 
                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
              />

@@ -63,3 +63,6 @@
 ## 2026-02-28 16:58:34 - Deployment Fix
 - Corrected Vite 'base' path to /second-mountain-ready/ for subdirectory deployment.
 - Re-deployed and verified assets load from the correct repository path.
+## 2026-02-28 17:00:13 - Deployment Fix
+- Added try-catch blocks for localStorage to prevent crashes in restricted browsers.
+- Re-deployed with corrected base path for GitHub Pages subdirectories.
