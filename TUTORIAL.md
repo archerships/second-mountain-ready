@@ -46,8 +46,9 @@ To ensure the site loads instantly:
 We use **Google Apps Script** as a serverless backend.
 
 1. **Secure Backend:** Move logic like password checks and data purging to the script.
-2. **Secrets Management:** Use Google's `PropertiesService` to store sensitive data like the `ADMIN_PASSWORD` and `API_KEY`. Never hardcode these in your frontend code!
-3. **Self-Healing Headers:** The script automatically creates and freezes headers if they are deleted or modified.
+2. **Secrets Management:** Use Google's `PropertiesService` to store sensitive data like the `ADMIN_PASSWORD` and `API_KEY`. 
+3. **Local Secrets:** Store these keys in a local `.env` file (and add `.env` to `.gitignore`!) for use in your CLI scripts.
+4. **Self-Healing Headers:** The script automatically creates and freezes headers if they are deleted or modified.
 
 ---
 
@@ -68,6 +69,7 @@ Protect your spreadsheet from "bad data":
 ## Step 7: Security Hardening
 1. **API Key:** Require a secret `key` parameter for all administrative `GET` requests (clear, setup, verify).
 2. **Backend Auth:** Handle "Admin Login" by sending the password to the backend via `POST`. This prevents the password from being visible in the site's source code.
+3. **Pre-commit Hooks:** Install a Git Hook to scan for secrets before every commit to prevent accidental leaks to GitHub.
 
 ---
 
@@ -77,8 +79,36 @@ Protect your spreadsheet from "bad data":
 
 ---
 
+## Step 9: Handing Over to the Client (Production Launch)
+When moving from your staging environment to the client's (e.g., Heather's) accounts, follow this transition checklist:
+
+### 1. Backend Migration (Google Account)
+1.  **Logout/Login:** Run `npx clasp logout` then `npx clasp login` using the client's Google credentials.
+2.  **Create New Backend:** Run `npx clasp create --type sheets --title "Client Leads" --rootDir ./apps-script`.
+3.  **Deploy:** Run `npx clasp push` then `npx clasp deploy`.
+4.  **Authorize:** Open the new Web App URL in a browser once and click **"Allow"** to grant permission for the script to write to the new spreadsheet.
+5.  **Set Secrets:** In the Google Apps Script editor, go to **Project Settings > Script Properties** and manually add the `ADMIN_PASSWORD` and `API_KEY`.
+
+### 2. Frontend Migration (GitHub & Code)
+1.  **Update Endpoint:** Paste the new Web App URL into `src/App.tsx`.
+2.  **Update Homepage:** Change the `homepage` field in `package.json` to the client's future URL.
+3.  **New Repository:** Create a new repository on the client's GitHub account and push the code there.
+
+### 3. Custom Domain Setup (e.g., Wix)
+If the client's domain is managed by Wix:
+1.  **Wix DNS Settings:** In the Wix dashboard, go to **Domains > Manage DNS Records**.
+2.  **Add A Records:** Point the domain to GitHub's IP addresses:
+    - `185.199.108.153`
+    - `185.199.109.153`
+    - `185.199.110.153`
+    - `185.199.111.153`
+3.  **Add CNAME Record:** Point `www` to `yourusername.github.io`.
+4.  **GitHub Settings:** In the GitHub repo, go to **Settings > Pages** and enter the custom domain. Check **"Enforce HTTPS"**.
+
+---
+
 ## Maintenance & Updates
 Updating is a 3-step loop:
 1. **Edit:** Change code locally.
-2. **Verify:** Run `npm test` and `npx playwright test`.
+2. **Verify:** Run `npm test` and `npm run test:e2e`.
 3. **Push:** Run `npm run deploy`. Your changes go live in 60 seconds.
