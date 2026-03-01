@@ -1,34 +1,40 @@
 import { test, expect } from '@playwright/test';
+import { faker } from '@faker-js/faker';
 
 /**
- * INTAKE FORM VERIFICATION TEST (WITH SPREADSHEET VALIDATION)
- * This script uses Playwright to perform a headless browser test.
- * 1. Fills out and submits the lead form.
- * 2. Verifies the website shows a success message.
- * 3. Calls the backend API to confirm the data exists in the Google Sheet.
+ * INTAKE FORM VERIFICATION TEST (WITH REALISTIC FAKER DATA)
+ * This script uses Playwright and Faker to perform a headless browser test.
+ * 1. Generates realistic, non-sensitive user data.
+ * 2. Fills out and submits the lead form.
+ * 3. Verifies the website shows a success message.
+ * 4. Calls the backend API to confirm the data exists in the Google Sheet.
  */
 
 test.describe('Second Mountain Ready - E2E Verification', () => {
   const SITE_URL = 'https://archerships.github.io/second-mountain-ready/';
-  const VERIFY_URL = 'https://script.google.com/macros/s/AKfycbztJL3r18lOuFSUrWtFTfN-Y7rIG3Sbus2C1tdq-AsVcnyHEXerh0_6MUarW2OROyTCXA/exec';
+  const VERIFY_URL = 'https://script.google.com/macros/s/AKfycby_4od9HbaC2TyZlnFVvh24XxYmNtM5ZCmY0vh10wR_D_Jb3yO4v2tNtKZKfnq3nJeQ8Q/exec';
+  const API_KEY = 'secret-test-key-2026';
 
   test('should submit form and verify data in spreadsheet', async ({ page, request }) => {
-    const uniqueId = Date.now().toString();
-    const testEmail = `test-${uniqueId}@playwright.com`;
-    const firstName = 'Playwright';
-    const lastName = 'Verification';
+    // Generate realistic test data
+    const firstName = faker.person.firstName();
+    const lastName = faker.person.lastName();
+    const testEmail = faker.internet.email({ firstName, lastName }).toLowerCase();
+    const phone = faker.string.numeric('##########'); // 10 digits
+    const glp1Months = faker.number.int({ min: 0, max: 48 }).toString();
+    const goals = faker.lorem.paragraph();
 
     console.log('--- Step 1: Submitting Form ---');
     console.log('Navigating to ' + SITE_URL + '...');
     await page.goto(SITE_URL);
 
-    console.log('Filling out form with email: ' + testEmail);
+    console.log(`Filling out form for: ${firstName} ${lastName} (${testEmail})`);
     await page.fill('input[name="firstName"]', firstName);
     await page.fill('input[name="lastName"]', lastName);
-    await page.fill('input[name="phone"]', '2082833707'); // Use valid length digits
+    await page.fill('input[name="phone"]', phone);
     await page.fill('input[name="email"]', testEmail);
-    await page.fill('input[name="glp1Duration"]', '12'); // Must be a number 0-120
-    await page.fill('textarea[name="fitnessGoals"]', 'Verify that data reaches the spreadsheet and headers are triggered.');
+    await page.fill('input[name="glp1Duration"]', glp1Months);
+    await page.fill('textarea[name="fitnessGoals"]', goals);
 
     console.log('Submitting...');
     await page.click('button[type="submit"]');
@@ -43,7 +49,7 @@ test.describe('Second Mountain Ready - E2E Verification', () => {
     await page.waitForTimeout(5000);
 
     console.log('Querying verification endpoint...');
-    const response = await request.get(`${VERIFY_URL}?verify=${testEmail}`);
+    const response = await request.get(`${VERIFY_URL}?key=${API_KEY}&verify=${testEmail}`);
     
     expect(response.ok()).toBeTruthy();
     const result = await response.json();
@@ -54,6 +60,6 @@ test.describe('Second Mountain Ready - E2E Verification', () => {
     expect(result.data.email).toBe(testEmail);
     expect(result.data.firstName).toBe(firstName);
     
-    console.log('✓ Spreadsheet verification passed!');
+    console.log('✓ Spreadsheet verification passed with realistic data!');
   });
 });

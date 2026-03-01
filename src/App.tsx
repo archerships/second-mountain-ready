@@ -114,15 +114,30 @@ const App: React.FC = () => {
     }
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Default prototype password
-    if (adminPassword === 'heather2026') {
-      setIsAdmin(true);
-      setShowLoginModal(false);
-      setAdminPassword('');
-      setAdminLoginError(false);
-    } else {
+    const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycby_4od9HbaC2TyZlnFVvh24XxYmNtM5ZCmY0vh10wR_D_Jb3yO4v2tNtKZKfnq3nJeQ8Q/exec';
+    
+    try {
+      const response = await fetch(GOOGLE_SHEET_URL, {
+        method: 'POST',
+        body: JSON.stringify({
+          action: 'login',
+          password: adminPassword
+        })
+      });
+      const data = await response.json();
+      
+      if (data.result === 'authorized') {
+        setIsAdmin(true);
+        setShowLoginModal(false);
+        setAdminPassword('');
+        setAdminLoginError(false);
+      } else {
+        setAdminLoginError(true);
+      }
+    } catch (error) {
+      console.error('Login error:', error);
       setAdminLoginError(true);
     }
   };
@@ -185,7 +200,7 @@ const App: React.FC = () => {
     }
 
     setIsSubmitting(true);
-    const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbztJL3r18lOuFSUrWtFTfN-Y7rIG3Sbus2C1tdq-AsVcnyHEXerh0_6MUarW2OROyTCXA/exec';
+    const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbytQjSE4GV-8GZ8cT9hMfBacprPkROrykeknHmWpCh8DFMQVWRYZg_gbmw9Y2HjzGYWBA/exec';
     
     const now = new Date();
     const sql92Time = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
