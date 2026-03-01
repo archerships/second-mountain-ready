@@ -60,3 +60,6 @@
 - Updated and re-ran test-site.sh to verify the live landing page with case-insensitive component search.
 - Verified all core components: Second Mountain, Heather Cooper, GLP1, Trainerize, Fitness Goals.
 - Verified all public assets: heather-cooper.jpg, vite.svg.
+## 2026-02-28 16:58:34 - Deployment Fix
+- Corrected Vite 'base' path to /second-mountain-ready/ for subdirectory deployment.
+- Re-deployed and verified assets load from the correct repository path.

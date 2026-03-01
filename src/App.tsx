@@ -40,14 +40,22 @@ const App: React.FC = () => {
 
   // Persist videos to localStorage
   useEffect(() => {
-    const savedVideos = localStorage.getItem('trainer-videos');
-    if (savedVideos) {
-      setVideos(JSON.parse(savedVideos));
+    try {
+      const savedVideos = localStorage.getItem('trainer-videos');
+      if (savedVideos) {
+        setVideos(JSON.parse(savedVideos));
+      }
+    } catch (e) {
+      console.warn("localStorage reading blocked or unavailable:", e);
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('trainer-videos', JSON.stringify(videos));
+    try {
+      localStorage.setItem('trainer-videos', JSON.stringify(videos));
+    } catch (e) {
+      console.warn("localStorage writing blocked or unavailable:", e);
+    }
   }, [videos]);
 
   const handleAddVideo = (e: React.FormEvent) => {
