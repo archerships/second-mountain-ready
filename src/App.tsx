@@ -116,7 +116,7 @@ const App: React.FC = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycby_4od9HbaC2TyZlnFVvh24XxYmNtM5ZCmY0vh10wR_D_Jb3yO4v2tNtKZKfnq3nJeQ8Q/exec';
+    const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbyWjP5Re_afehuWNTBCjsc40CxgeDppZz70n4LZsYk_hsGoeJwqFmmLP-iznLlZRTVajQ/exec';
     
     try {
       const response = await fetch(GOOGLE_SHEET_URL, {

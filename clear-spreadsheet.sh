@@ -2,7 +2,7 @@
 
 # Configuration
 PROJ_DIR="/Users/crasch/av/web/second-mountain-ready"
-URL="https://script.google.com/macros/s/AKfycby_4od9HbaC2TyZlnFVvh24XxYmNtM5ZCmY0vh10wR_D_Jb3yO4v2tNtKZKfnq3nJeQ8Q/exec"
+URL="https://script.google.com/macros/s/AKfycbyWjP5Re_afehuWNTBCjsc40CxgeDppZz70n4LZsYk_hsGoeJwqFmmLP-iznLlZRTVajQ/exec"
 
 # Load API_KEY from .env
 if [ -f "$PROJ_DIR/.env" ]; then

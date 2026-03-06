@@ -12,7 +12,7 @@ import { faker } from '@faker-js/faker';
 
 test.describe('Second Mountain Ready - E2E Verification', () => {
   const SITE_URL = 'https://archerships.github.io/second-mountain-ready/';
-  const VERIFY_URL = 'https://script.google.com/macros/s/AKfycby_4od9HbaC2TyZlnFVvh24XxYmNtM5ZCmY0vh10wR_D_Jb3yO4v2tNtKZKfnq3nJeQ8Q/exec';
+  const VERIFY_URL = 'https://script.google.com/macros/s/AKfycbyWjP5Re_afehuWNTBCjsc40CxgeDppZz70n4LZsYk_hsGoeJwqFmmLP-iznLlZRTVajQ/exec';
   const API_KEY = process.env.API_KEY;
 
   test('should submit form and verify data in spreadsheet', async ({ page, request }) => {

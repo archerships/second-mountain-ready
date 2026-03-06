@@ -1,21 +1,15 @@
 function doGet(e) {
   var props = PropertiesService.getScriptProperties();
-  
   var apiKey = props.getProperty('API_KEY');
+  
+  // Require API KEY for all management actions
   if (e.parameter.key !== apiKey) {
     return ContentService.createTextOutput("Unauthorized: Valid API Key required.")
       .setMimeType(ContentService.MimeType.TEXT);
   }
 
   if (e.parameter.setup || e.parameter.force) {
-    try {
-      setupHeaders(true);
-      return ContentService.createTextOutput("Success: Headers initialized.")
-        .setMimeType(ContentService.MimeType.TEXT);
-    } catch (err) {
-      return ContentService.createTextOutput("Error: " + err.message)
-        .setMimeType(ContentService.MimeType.TEXT);
-    }
+    return setupHeaders(true);
   }
 
   if (e.parameter.clear === 'true') {
@@ -26,7 +20,7 @@ function doGet(e) {
     return verifyEntry(e.parameter.verify);
   }
 
-  return ContentService.createTextOutput("Second Mountain Ready Internal API is live.")
+  return ContentService.createTextOutput("Second Mountain Ready API is live (v21).")
     .setMimeType(ContentService.MimeType.TEXT);
 }
 
@@ -34,17 +28,18 @@ function doPost(e) {
   var data = JSON.parse(e.postData.contents);
   var props = PropertiesService.getScriptProperties();
 
+  // AUTH: Check for Admin Login
   if (data.action === 'login') {
     var adminPass = props.getProperty('ADMIN_PASSWORD');
     if (data.password === adminPass) {
       return ContentService.createTextOutput(JSON.stringify({"result": "authorized"}))
         .setMimeType(ContentService.MimeType.JSON);
-    } else {
-      return ContentService.createTextOutput(JSON.stringify({"result": "unauthorized"}))
-        .setMimeType(ContentService.MimeType.JSON);
     }
+    return ContentService.createTextOutput(JSON.stringify({"result": "unauthorized"}))
+      .setMimeType(ContentService.MimeType.JSON);
   }
 
+  // DATA: Form Submission
   try {
     setupHeaders(false);
     var ss = SpreadsheetApp.openById('1ek3WXu2JMMX2iKnOZQYC4Bmieq_BEsbdhQXL1twshJo');
@@ -84,11 +79,9 @@ function verifyEntry(emailToFind) {
         })).setMimeType(ContentService.MimeType.JSON);
       }
     }
-    return ContentService.createTextOutput(JSON.stringify({"result": "not_found"}))
-      .setMimeType(ContentService.MimeType.JSON);
+    return ContentService.createTextOutput(JSON.stringify({"result": "not_found"}));
   } catch (err) {
-    return ContentService.createTextOutput(JSON.stringify({"result": "error", "message": err.message}))
-      .setMimeType(ContentService.MimeType.JSON);
+    return ContentService.createTextOutput(JSON.stringify({"result": "error", "message": err.message}));
   }
 }
 
@@ -99,8 +92,7 @@ function clearSheet() {
     var lastRow = sheet.getLastRow();
     if (lastRow > 1) {
       sheet.deleteRows(2, lastRow - 1);
-      return ContentService.createTextOutput("Success: Spreadsheet cleared.")
-        .setMimeType(ContentService.MimeType.TEXT);
+      return ContentService.createTextOutput("Success: Spreadsheet cleared.");
     }
     return ContentService.createTextOutput("Spreadsheet is already empty.");
   } catch (err) {
@@ -126,4 +118,5 @@ function setupHeaders(force) {
     sheet.setFrozenRows(1);
     sheet.getRange(1, 1, 1, headers.length).setFontWeight("bold");
   }
+  return ContentService.createTextOutput("Success: Headers initialized.");
 }
